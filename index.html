@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coin Flip</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            background: #0f0c29;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        div.wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 32px;
+            padding: 3rem 2.5rem;
+            width: 360px;
+            gap: 0;
+            box-shadow:
+                0 25px 50px rgba(0,0,0,0.4),
+                inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+
+        .game-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .game-subtitle {
+            font-size: 13px;
+            color: rgba(255,255,255,0.4);
+            margin-bottom: 2.5rem;
+            letter-spacing: 0.3px;
+        }
+
+        /* ── scoreboard ── */
+        .score-section {
+            display: flex;
+            gap: 14px;
+            width: 100%;
+            margin-bottom: 2.2rem;
+        }
+
+        .score-card {
+            flex: 1;
+            border-radius: 20px;
+            padding: 1.2rem 1rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .score-card.user-card {
+            background: linear-gradient(135deg, #4776e6, #8e54e9);
+            box-shadow: 0 8px 25px rgba(71,118,230,0.4);
+        }
+
+        .score-card.comp-card {
+            background: linear-gradient(135deg, #f5576c, #f093fb);
+            box-shadow: 0 8px 25px rgba(245,87,108,0.4);
+        }
+
+        .score-card::before {
+            content: '';
+            position: absolute;
+            top: -30px;
+            right: -30px;
+            width: 80px;
+            height: 80px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 50%;
+        }
+
+        .score-card span {
+            display: block;
+        }
+
+        .score-card b {
+            font-size: 11px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.7);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+
+        .score {
+            font-size: 42px !important;
+            font-weight: 800 !important;
+            color: #fff !important;
+            line-height: 1;
+        }
+
+        /* ── coin ── */
+        .coin-container {
+            width: 110px;
+            height: 110px;
+            margin-bottom: 2.2rem;
+            position: relative;
+        }
+
+        .coin-ring {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            background: conic-gradient(#ffd700, #ff8c00, #ffd700, #ff8c00, #ffd700);
+            padding: 4px;
+            animation: spin-ring 6s linear infinite;
+        }
+
+        @keyframes spin-ring {
+            to { transform: rotate(360deg); }
+        }
+
+        .coin-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f7971e, #ffd200);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 44px;
+        }
+
+        /* ── buttons ── */
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            width: 100%;
+            margin-bottom: 1.5rem;
+        }
+
+        button {
+            flex: 1;
+            padding: 14px 0;
+            font-family: 'Poppins', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            border-radius: 14px;
+            border: none;
+            cursor: pointer;
+            letter-spacing: 0.5px;
+            transition: transform 0.15s, box-shadow 0.15s;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(255,255,255,0);
+            transition: background 0.2s;
+        }
+
+        button:hover::after {
+            background: rgba(255,255,255,0.12);
+        }
+
+        button:first-of-type {
+            background: linear-gradient(135deg, #4776e6, #8e54e9);
+            box-shadow: 0 6px 20px rgba(71,118,230,0.45);
+        }
+
+        button:last-of-type {
+            background: linear-gradient(135deg, #f5576c, #f093fb);
+            box-shadow: 0 6px 20px rgba(245,87,108,0.45);
+        }
+
+        button:hover { transform: translateY(-3px); }
+        button:active { transform: scale(0.96); }
+
+        /* ── result message ── */
+        #resultMsg {
+            font-size: 13px;
+            color: rgba(255,255,255,0.45);
+            text-align: center;
+            min-height: 20px;
+            letter-spacing: 0.2px;
+        }
+
+        #resultMsg.win  { color: #a8ff78; }
+        #resultMsg.lose { color: #f5576c; }
+    </style>
+</head>
+<body>
+
+    <div class="wrapper">
+
+        <p class="game-title">🪙 Coin Flip</p>
+        <p class="game-subtitle">Beat the computer — pick your side!</p>
+
+        <!-- scoreboard -->
+        <div class="score-section">
+            <div class="score-card user-card">
+                <span id="pc"><b>You</b></span>
+                <span class="score" id="usser">0</span>
+            </div>
+            <div class="score-card comp-card">
+                <span id="pc"><b>Computer</b></span>
+                <span class="score" id="Computer">0</span>
+            </div>
+        </div>
+
+        <!-- coin -->
+        <div class="coin-container">
+            <div class="coin-ring">
+                <div class="coin-inner" id="coinFace">🪙</div>
+            </div>
+        </div>
+
+        <!-- buttons -->
+        <div class="btn-group">
+            <button>Head</button>
+            <button>Tail</button>
+        </div>
+
+        <p id="resultMsg">Choose Head or Tail to begin!</p>
+
+    </div>
+
+    <script>
+        // select the id.:-
+        let span = document.querySelectorAll("#pc");
+        // console.log(span);
+
+        // select the html tag.:-
+         let button = document.querySelectorAll("button");
+        //  console.log(button);
+
+        //select the class name.:-
+        let score_Span = document.getElementsByClassName("score");
+        // console.log(score_Span);
+        // for(let i=0; i<=score_Span.length-1; i++){
+        //     // console.log(score_Span[i], i);
+        // }
+        // console.log(score_Span.innerText)
+        // let e = null;
+        for(let t of button){
+            // console.log(t);
+            // console.log(t.innerText);
+            t.addEventListener("click", buttonClick);
+        }
+        function buttonClick(e){
+            // e.preventDefault();
+            // console.log(this);
+            let val = e.target.innerText;
+            // console.log(val);
+            // console.log(value);
+
+            let arr = ["head","tail"];
+            let randomValue = Math.floor(Math.random()*arr.length);
+            // console.log(arr[randomValue]);
+            let arrValue = arr[randomValue];
+            // console.log(arrValue);
+
+            // update coin face
+            document.getElementById("coinFace").textContent = arrValue === "head" ? "👑" : "🦅";
+
+            // result message
+            let msg = document.getElementById("resultMsg");
+
+            if(arrValue.toLowerCase() == val.toLowerCase()){
+                // console.log("Reshabh Game mat Khelo");
+                // console.log(typeof(score_Span[0].innerText) );
+                score_Span[0].innerText =  +score_Span[0].innerText + 1;
+                // console.log(score_Span[0].innerText);
+                msg.textContent = "✅ It's " + arrValue + " — You win this round!";
+                msg.className = "win";
+            }else{
+                score_Span[1].innerText = +score_Span[1].innerText + 1;
+                msg.textContent = "❌ It's " + arrValue + " — Computer wins!";
+                msg.className = "lose";
+            }
+        }
+    </script>
+</body>
+</html>
